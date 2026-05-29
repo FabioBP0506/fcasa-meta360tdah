@@ -1,0 +1,632 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>F-Casa — META360TDAH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --navy-900: #0a1628;
+      --navy-800: #0f2040;
+      --navy-700: #142952;
+      --navy-600: #1a3468;
+      --coral:    #f4622a;
+      --orange:   #f9a03f;
+      --grad:     linear-gradient(135deg, #f4622a 0%, #f9a03f 100%);
+      --grad-soft: linear-gradient(135deg, rgba(244,98,42,.15) 0%, rgba(249,160,63,.15) 100%);
+      --white:    #ffffff;
+      --slate-100: #e8edf5;
+      --slate-400: #7e93b5;
+      --slate-500: #546990;
+      --text:     #e4eaf5;
+      --text-muted: #7e93b5;
+      --panel-border: rgba(255,255,255,.08);
+      --shadow-lg: 0 24px 64px rgba(0,0,0,.45);
+      --shadow-card: 0 4px 24px rgba(0,0,0,.3);
+      --radius: 14px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--navy-900);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: .6;
+    }
+    .bg-blob { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; }
+    .bg-blob-1 { width: 600px; height: 600px; top: -200px; left: -200px; background: radial-gradient(circle, rgba(244,98,42,.18) 0%, transparent 70%); }
+    .bg-blob-2 { width: 500px; height: 500px; bottom: -100px; right: -100px; background: radial-gradient(circle, rgba(26,52,104,.6) 0%, transparent 70%); }
+    .bg-blob-3 { width: 400px; height: 400px; top: 50%; left: 60%; background: radial-gradient(circle, rgba(249,160,63,.08) 0%, transparent 70%); }
+
+    .app { position: relative; z-index: 1; width: min(1200px, calc(100% - 40px)); margin: 0 auto; padding-bottom: 60px; }
+
+    /* TOPBAR */
+    .topbar { display: flex; align-items: center; justify-content: space-between; padding: 20px 0 0; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand-logo { width: 36px; height: 36px; background: var(--grad); border-radius: 9px; display: grid; place-items: center; flex-shrink: 0; }
+    .brand-name { font-size: .9rem; font-weight: 800; letter-spacing: .04em; color: var(--white); }
+    .brand-name span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .topbar-badge { display: flex; align-items: center; gap: 6px; padding: 6px 14px; background: rgba(244,98,42,.12); border: 1px solid rgba(244,98,42,.3); border-radius: 999px; font-size: .78rem; font-weight: 600; color: var(--orange); letter-spacing: .03em; }
+
+    /* HERO */
+    .hero { padding: 52px 0 40px; display: grid; grid-template-columns: 1fr auto; gap: 32px; align-items: center; border-bottom: 1px solid var(--panel-border); animation: fadeUp .5s ease both; }
+    .hero-eyebrow { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px; padding: 5px 14px 5px 10px; background: var(--grad-soft); border: 1px solid rgba(244,98,42,.25); border-radius: 999px; font-size: .8rem; font-weight: 600; color: var(--orange); letter-spacing: .06em; text-transform: uppercase; }
+    .hero-eyebrow-dot { width: 6px; height: 6px; background: var(--coral); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.7)} }
+    h1 { font-size: clamp(2.6rem, 6vw, 4.2rem); font-weight: 800; line-height: 1.02; letter-spacing: -.03em; color: var(--white); }
+    h1 .accent { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero-sub { margin-top: 16px; max-width: 600px; font-size: 1.05rem; line-height: 1.65; color: var(--text-muted); }
+    .hero-badges { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+    .hbadge { display: inline-flex; align-items: center; gap: 7px; padding: 7px 14px; background: rgba(255,255,255,.04); border: 1px solid var(--panel-border); border-radius: 999px; font-size: .82rem; font-weight: 500; color: var(--slate-100); }
+    .hbadge svg { color: var(--orange); flex-shrink: 0; }
+
+    /* RING */
+    .hero-visual { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .hero-score-ring { position: relative; width: 140px; height: 140px; }
+    .hero-score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .ring-bg { fill: none; stroke: rgba(255,255,255,.07); stroke-width: 8; }
+    .ring-fill { fill: none; stroke: url(#ringGrad); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 340; stroke-dashoffset: 340; transition: stroke-dashoffset .6s cubic-bezier(.4,0,.2,1); }
+    .hero-score-inner { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .hero-score-inner strong { font-size: 2.4rem; font-weight: 800; line-height: 1; color: var(--white); }
+    .hero-score-inner span { font-size: .72rem; color: var(--text-muted); font-weight: 600; letter-spacing: .04em; }
+    .hero-level-pill { padding: 6px 16px; border-radius: 999px; font-size: .78rem; font-weight: 700; background: rgba(8,127,140,.2); color: #5feaf7; border: 1px solid rgba(8,127,140,.4); transition: all .3s; text-align: center; }
+
+    /* LAYOUT */
+    main { display: grid; grid-template-columns: minmax(0,1fr) 340px; gap: 24px; align-items: start; margin-top: 28px; }
+    form { display: grid; gap: 20px; }
+
+    /* CARDS */
+    .card { background: var(--navy-800); border: 1px solid var(--panel-border); border-radius: var(--radius); box-shadow: var(--shadow-card); overflow: hidden; animation: fadeUp .5s ease both; }
+    .card:nth-child(2){animation-delay:.08s} .card:nth-child(3){animation-delay:.16s}
+    .card-header { display: flex; align-items: center; gap: 12px; padding: 18px 22px 14px; border-bottom: 1px solid var(--panel-border); }
+    .card-icon { width: 36px; height: 36px; border-radius: 9px; background: var(--grad-soft); border: 1px solid rgba(244,98,42,.2); display: grid; place-items: center; flex-shrink: 0; }
+    .card-icon svg { color: var(--orange); }
+    .card-title { font-size: .95rem; font-weight: 700; color: var(--white); }
+    .card-body { padding: 22px; }
+
+    /* FIELDS */
+    .field-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 16px; }
+    .field { display: grid; gap: 8px; }
+    .full { grid-column: 1 / -1; }
+    .field label { font-size: .82rem; font-weight: 600; color: var(--slate-100); letter-spacing: .03em; text-transform: uppercase; }
+    input[type="text"], select, textarea { width: 100%; min-height: 46px; padding: 10px 14px; background: rgba(255,255,255,.05); border: 1px solid var(--panel-border); border-radius: 9px; color: var(--white); font-family: 'Plus Jakarta Sans', sans-serif; font-size: .95rem; transition: border-color .2s, background .2s; -webkit-appearance: none; }
+    textarea { min-height: 100px; resize: vertical; }
+    input[type="text"]::placeholder, textarea::placeholder { color: var(--slate-500); }
+    select option { background: var(--navy-800); color: var(--white); }
+    input[type="text"]:focus, select:focus, textarea:focus { outline: none; border-color: var(--coral); background: rgba(244,98,42,.07); }
+
+    /* SCALE LEGEND */
+    .scale-legend { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; margin-bottom: 22px; }
+    .scale-legend-item { padding: 10px 8px; background: rgba(255,255,255,.03); border: 1px solid var(--panel-border); border-radius: 9px; text-align: center; }
+    .scale-legend-num { display: block; font-size: 1.2rem; font-weight: 800; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 4px; }
+    .scale-legend-label { font-size: .72rem; color: var(--text-muted); line-height: 1.3; }
+
+    /* QUESTIONS */
+    .question { padding: 18px 0; border: 0; border-top: 1px solid var(--panel-border); }
+    .question:first-of-type { border-top: 0; padding-top: 0; }
+    .question legend { font-size: .95rem; font-weight: 500; color: var(--slate-100); line-height: 1.5; margin-bottom: 14px; display: block; width: 100%; }
+    .question-num { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--grad); font-size: .72rem; font-weight: 800; color: white; margin-right: 8px; vertical-align: middle; flex-shrink: 0; }
+    .rating { display: grid; grid-template-columns: repeat(5, minmax(42px,1fr)); gap: 8px; }
+    .rating input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+    .rating label { display: grid; place-items: center; min-height: 50px; background: rgba(255,255,255,.04); border: 1px solid var(--panel-border); border-radius: 9px; color: var(--text-muted); font-size: 1rem; font-weight: 700; cursor: pointer; touch-action: manipulation; user-select: none; transition: all .18s; }
+    .rating label:hover { background: rgba(244,98,42,.12); border-color: rgba(244,98,42,.4); color: var(--orange); transform: translateY(-2px); }
+    .rating input:checked + label { background: var(--grad); border-color: transparent; color: #fff; box-shadow: 0 4px 16px rgba(244,98,42,.4); transform: translateY(-2px); }
+
+    /* CHECKBOXES */
+    .checks { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+    .check { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; background: rgba(255,255,255,.03); border: 1px solid var(--panel-border); border-radius: 9px; cursor: pointer; transition: all .18s; }
+    .check:hover { background: rgba(244,98,42,.07); border-color: rgba(244,98,42,.3); }
+    .check input[type="checkbox"] { width: 18px; height: 18px; min-width: 18px; margin-top: 1px; accent-color: var(--coral); cursor: pointer; }
+    .check span { font-size: .88rem; color: var(--slate-100); line-height: 1.4; }
+    .consent { margin-top: 16px; padding: 14px 16px; background: rgba(244,98,42,.06); border: 1px solid rgba(244,98,42,.2); border-radius: 9px; display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
+    .consent span { font-size: .88rem; color: var(--text-muted); line-height: 1.5; }
+
+    /* BUTTONS */
+    .form-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--panel-border); }
+    .btn { display: inline-flex; align-items: center; gap: 8px; min-height: 46px; padding: 10px 20px; border-radius: 9px; border: 1px solid var(--panel-border); background: rgba(255,255,255,.06); color: var(--text); font-family: 'Plus Jakarta Sans', sans-serif; font-size: .9rem; font-weight: 600; cursor: pointer; transition: all .18s; }
+    .btn:hover { background: rgba(255,255,255,.1); }
+    .btn.primary { background: var(--grad); border-color: transparent; color: #fff; box-shadow: 0 4px 20px rgba(244,98,42,.35); }
+    .btn.primary:hover { box-shadow: 0 6px 28px rgba(244,98,42,.5); transform: translateY(-1px); }
+    .btn svg { flex-shrink: 0; }
+    .form-status { display: none; margin-top: 14px; padding: 14px 16px; border-radius: 9px; background: rgba(95,234,247,.08); border: 1px solid rgba(95,234,247,.2); color: #5feaf7; font-size: .88rem; }
+    .form-status.show { display: flex; align-items: center; gap: 10px; }
+
+    /* RESULT PANEL */
+    .result-panel { position: sticky; top: 20px; background: var(--navy-800); border: 1px solid var(--panel-border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-lg); animation: fadeUp .5s .12s ease both; }
+    .result-header { background: linear-gradient(135deg, var(--navy-700) 0%, var(--navy-600) 100%); padding: 22px; position: relative; overflow: hidden; }
+    .result-header::before { content: ''; position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; background: radial-gradient(circle, rgba(244,98,42,.2) 0%, transparent 70%); border-radius: 50%; }
+    .result-label { font-size: .75rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; }
+    .result-score-row { display: flex; align-items: baseline; gap: 6px; }
+    .result-score-row strong { font-size: 3.2rem; font-weight: 800; line-height: 1; color: var(--white); }
+    .result-score-row span { font-size: 1rem; color: var(--text-muted); }
+    .result-body { padding: 18px 20px; display: grid; gap: 16px; }
+    .level-tag { padding: 10px 14px; border-radius: 9px; font-size: .85rem; font-weight: 700; line-height: 1.4; border-left: 4px solid; transition: all .3s; }
+    .level-tag.nivel-1 { background: rgba(8,127,140,.15); border-color: #087f8c; color: #5feaf7; }
+    .level-tag.nivel-2 { background: rgba(23,133,91,.15); border-color: #17855b; color: #5feabd; }
+    .level-tag.nivel-3 { background: rgba(181,106,0,.15); border-color: #f9a03f; color: #f9c56f; }
+    .level-tag.nivel-4 { background: rgba(244,98,42,.15); border-color: #f4622a; color: #f9926a; }
+    .result-block { display: grid; gap: 5px; }
+    .result-block-label { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); }
+    .result-block-value { font-size: .88rem; color: var(--slate-100); line-height: 1.5; }
+    .pill-list { display: flex; flex-wrap: wrap; gap: 6px; list-style: none; }
+    .pill-list li { padding: 4px 10px; border-radius: 999px; background: rgba(244,98,42,.15); color: var(--orange); font-size: .78rem; font-weight: 600; border: 1px solid rgba(244,98,42,.25); }
+    .pill-list .empty { background: rgba(255,255,255,.04); color: var(--text-muted); border-color: var(--panel-border); }
+    .result-actions { padding: 16px 20px; border-top: 1px solid var(--panel-border); background: rgba(0,0,0,.15); display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .mobile-bar { display: none; }
+
+    /* RESPONSIVE */
+    @media (max-width: 980px) {
+      main { grid-template-columns: 1fr; }
+      .result-panel { position: static; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-visual { display: none; }
+    }
+    @media (max-width: 680px) {
+      body { padding-bottom: 88px; }
+      .app { width: calc(100% - 24px); padding-top: 14px; }
+      .hero { padding: 32px 0 28px; }
+      .field-grid, .checks, .scale-legend { grid-template-columns: 1fr; }
+      .rating { grid-template-columns: repeat(5, minmax(36px,1fr)); gap: 6px; }
+      .result-actions { display: none; }
+      .mobile-bar { position: fixed; z-index: 30; left: 0; right: 0; bottom: 0; display: grid; padding: 12px 16px; background: var(--navy-800); border-top: 1px solid var(--panel-border); box-shadow: 0 -8px 32px rgba(0,0,0,.4); }
+      .mobile-bar .btn { width: 100%; min-height: 54px; justify-content: center; }
+    }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  </style>
+</head>
+<body>
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
+
+  <div class="app">
+
+    <!-- TOPBAR -->
+    <nav class="topbar">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="10" r="8" stroke="white" stroke-width="1.5"/>
+            <path d="M6 10h8M10 6v8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="brand-name">META<span>360</span>TDAH</span>
+      </div>
+      <div class="topbar-badge">
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="5"/></svg>
+        Últimos 14 dias
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <header class="hero">
+      <div>
+        <div class="hero-eyebrow">
+          <span class="hero-eyebrow-dot"></span>
+          Pilar Casa · Módulo F
+        </div>
+        <h1>F-Casa<br><span class="accent">Rotina &amp; Comportamento Familiar</span></h1>
+        <p class="hero-sub">Avalie o funcionamento da rotina doméstica, os pontos de conflito e o desgaste familiar nos últimos 14 dias.</p>
+        <div class="hero-badges">
+          <span class="hbadge">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 1.5L2 5v7.5h3.5V9H8.5v3.5H12V5L7 1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+            Rotina familiar
+          </span>
+          <span class="hbadge">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <path d="M7 1l1.6 3.3 3.6.5-2.6 2.5.6 3.6L7 9.1l-3.2 1.8.6-3.6L1.8 4.8l3.6-.5L7 1z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+            5 dimensões
+          </span>
+          <span class="hbadge">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+              <circle cx="7" cy="7" r="6" stroke="currentColor" stroke-width="1.4"/>
+              <path d="M7 4v3.5l2 1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            Reavaliação guiada
+          </span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-score-ring">
+          <svg viewBox="0 0 120 120">
+            <defs>
+              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#f4622a"/>
+                <stop offset="100%" stop-color="#f9a03f"/>
+              </linearGradient>
+            </defs>
+            <circle class="ring-bg" cx="60" cy="60" r="54"/>
+            <circle class="ring-fill" id="ringFill" cx="60" cy="60" r="54"/>
+          </svg>
+          <div class="hero-score-inner">
+            <strong id="heroScore">5</strong>
+            <span>DE 25</span>
+          </div>
+        </div>
+        <div class="hero-level-pill" id="heroLevel">Nível 1 — manutenção</div>
+      </div>
+    </header>
+
+    <main>
+      <form id="casa-form" action="https://formspree.io/f/xjgzpgoz" method="POST" accept-charset="UTF-8" novalidate>
+        <!-- Hidden fields -->
+        <input type="hidden" name="_subject" value="Novo resultado - F-Casa META360TDAH">
+        <input type="hidden" name="_language" value="pt-BR">
+        <input type="hidden" name="id_formulario" value="F_CASA">
+        <input type="hidden" name="nome_formulario" value="F-Casa">
+        <input type="hidden" name="resultado_pontuacao" id="resultado_pontuacao">
+        <input type="hidden" name="resultado_nivel" id="resultado_nivel">
+        <input type="hidden" name="resultado_interpretacao" id="resultado_interpretacao">
+        <input type="hidden" name="resultado_conduta" id="resultado_conduta">
+        <input type="hidden" name="resultado_reavaliacao" id="resultado_reavaliacao">
+        <input type="hidden" name="alertas_resumo" id="alertas_resumo">
+
+        <!-- DADOS INICIAIS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M9 2L2 7v9h4.5v-4H11.5v4H16V7L9 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="card-title">Identificação e Contexto</span>
+          </div>
+          <div class="card-body">
+            <div class="field-grid">
+              <div class="field">
+                <label for="nome_crianca">Nome da criança</label>
+                <input id="nome_crianca" name="nome_crianca" type="text" placeholder="Nome completo" required>
+              </div>
+              <div class="field">
+                <label for="momento_dificuldade">Principal momento de dificuldade em casa</label>
+                <select id="momento_dificuldade" name="momento_dificuldade" required>
+                  <option value="">Selecionar</option>
+                  <option>Manhã</option>
+                  <option>Almoço</option>
+                  <option>Fim da tarde</option>
+                  <option>Tarefa de casa</option>
+                  <option>Banho</option>
+                  <option>Tela</option>
+                  <option>Sono</option>
+                  <option>Refeições</option>
+                  <option>Transições</option>
+                  <option>Outro</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="quem_conduz_rotina">Quem costuma conduzir a rotina?</label>
+                <select id="quem_conduz_rotina" name="quem_conduz_rotina" required>
+                  <option value="">Selecionar</option>
+                  <option>Mãe</option>
+                  <option>Pai</option>
+                  <option>Ambos</option>
+                  <option>Avós</option>
+                  <option>Cuidador(a)</option>
+                  <option>Varia muito</option>
+                </select>
+              </div>
+              <div class="field full">
+                <label for="estrategia_tentada">Estratégia tentada nos últimos 30 dias</label>
+                <textarea id="estrategia_tentada" name="estrategia_tentada" placeholder="Descreva brevemente o que a família já tentou..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PONTUAÇÃO -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M9 1.5l2 4 4.5.7-3.2 3.2.7 4.5L9 11.8l-4 2.1.7-4.5L2.5 6.2l4.5-.7L9 1.5z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="card-title">Pontuação — escala 1 a 5</span>
+          </div>
+          <div class="card-body">
+            <div class="scale-legend">
+              <div class="scale-legend-item"><span class="scale-legend-num">1</span><span class="scale-legend-label">Pouco, merece observação</span></div>
+              <div class="scale-legend-item"><span class="scale-legend-num">2</span><span class="scale-legend-label">Leve, precisa de organização</span></div>
+              <div class="scale-legend-item"><span class="scale-legend-num">3</span><span class="scale-legend-label">Frequência moderada</span></div>
+              <div class="scale-legend-item"><span class="scale-legend-num">4</span><span class="scale-legend-label">Bastante, prejuízo claro</span></div>
+              <div class="scale-legend-item"><span class="scale-legend-num">5</span><span class="scale-legend-label">Intenso, impacto importante</span></div>
+            </div>
+
+            <fieldset class="question">
+              <legend><span class="question-num">1</span>A rotina da casa frequentemente depende de muita insistência dos adultos.</legend>
+              <div class="rating">
+                <input type="radio" name="casa_01" id="casa_01_1" value="1" checked required><label for="casa_01_1" data-rating-input="casa_01_1">1</label>
+                <input type="radio" name="casa_01" id="casa_01_2" value="2" required><label for="casa_01_2" data-rating-input="casa_01_2">2</label>
+                <input type="radio" name="casa_01" id="casa_01_3" value="3" required><label for="casa_01_3" data-rating-input="casa_01_3">3</label>
+                <input type="radio" name="casa_01" id="casa_01_4" value="4" required><label for="casa_01_4" data-rating-input="casa_01_4">4</label>
+                <input type="radio" name="casa_01" id="casa_01_5" value="5" required><label for="casa_01_5" data-rating-input="casa_01_5">5</label>
+              </div>
+            </fieldset>
+
+            <fieldset class="question">
+              <legend><span class="question-num">2</span>Tarefas simples como levantar, tomar banho, comer, desligar tela ou dormir geram conflito.</legend>
+              <div class="rating">
+                <input type="radio" name="casa_02" id="casa_02_1" value="1" checked required><label for="casa_02_1" data-rating-input="casa_02_1">1</label>
+                <input type="radio" name="casa_02" id="casa_02_2" value="2" required><label for="casa_02_2" data-rating-input="casa_02_2">2</label>
+                <input type="radio" name="casa_02" id="casa_02_3" value="3" required><label for="casa_02_3" data-rating-input="casa_02_3">3</label>
+                <input type="radio" name="casa_02" id="casa_02_4" value="4" required><label for="casa_02_4" data-rating-input="casa_02_4">4</label>
+                <input type="radio" name="casa_02" id="casa_02_5" value="5" required><label for="casa_02_5" data-rating-input="casa_02_5">5</label>
+              </div>
+            </fieldset>
+
+            <fieldset class="question">
+              <legend><span class="question-num">3</span>Preciso repetir comandos muitas vezes para a criança iniciar ou terminar algo.</legend>
+              <div class="rating">
+                <input type="radio" name="casa_03" id="casa_03_1" value="1" checked required><label for="casa_03_1" data-rating-input="casa_03_1">1</label>
+                <input type="radio" name="casa_03" id="casa_03_2" value="2" required><label for="casa_03_2" data-rating-input="casa_03_2">2</label>
+                <input type="radio" name="casa_03" id="casa_03_3" value="3" required><label for="casa_03_3" data-rating-input="casa_03_3">3</label>
+                <input type="radio" name="casa_03" id="casa_03_4" value="4" required><label for="casa_03_4" data-rating-input="casa_03_4">4</label>
+                <input type="radio" name="casa_03" id="casa_03_5" value="5" required><label for="casa_03_5" data-rating-input="casa_03_5">5</label>
+              </div>
+            </fieldset>
+
+            <fieldset class="question">
+              <legend><span class="question-num">4</span>A criança reage com oposição, irritação ou explosão quando é contrariada.</legend>
+              <div class="rating">
+                <input type="radio" name="casa_04" id="casa_04_1" value="1" checked required><label for="casa_04_1" data-rating-input="casa_04_1">1</label>
+                <input type="radio" name="casa_04" id="casa_04_2" value="2" required><label for="casa_04_2" data-rating-input="casa_04_2">2</label>
+                <input type="radio" name="casa_04" id="casa_04_3" value="3" required><label for="casa_04_3" data-rating-input="casa_04_3">3</label>
+                <input type="radio" name="casa_04" id="casa_04_4" value="4" required><label for="casa_04_4" data-rating-input="casa_04_4">4</label>
+                <input type="radio" name="casa_04" id="casa_04_5" value="5" required><label for="casa_04_5" data-rating-input="casa_04_5">5</label>
+              </div>
+            </fieldset>
+
+            <fieldset class="question">
+              <legend><span class="question-num">5</span>Tenho a sensação de que a casa só funciona se um adulto estiver controlando tudo.</legend>
+              <div class="rating">
+                <input type="radio" name="casa_05" id="casa_05_1" value="1" checked required><label for="casa_05_1" data-rating-input="casa_05_1">1</label>
+                <input type="radio" name="casa_05" id="casa_05_2" value="2" required><label for="casa_05_2" data-rating-input="casa_05_2">2</label>
+                <input type="radio" name="casa_05" id="casa_05_3" value="3" required><label for="casa_05_3" data-rating-input="casa_05_3">3</label>
+                <input type="radio" name="casa_05" id="casa_05_4" value="4" required><label for="casa_05_4" data-rating-input="casa_05_4">4</label>
+                <input type="radio" name="casa_05" id="casa_05_5" value="5" required><label for="casa_05_5" data-rating-input="casa_05_5">5</label>
+              </div>
+            </fieldset>
+          </div>
+        </div>
+
+        <!-- ALERTAS -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-icon">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M9 2l1.5 5h5l-4 3 1.5 5L9 12l-4 3 1.5-5-4-3h5L9 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <span class="card-title">Alertas observados</span>
+          </div>
+          <div class="card-body">
+            <div class="checks">
+              <label class="check"><input type="checkbox" name="alertas" value="Explosões diárias"><span>💥 Explosões diárias</span></label>
+              <label class="check"><input type="checkbox" name="alertas" value="Agressão física em casa"><span>⚡ Agressão física em casa</span></label>
+              <label class="check"><input type="checkbox" name="alertas" value="Quebra de objetos"><span>🪟 Quebra de objetos</span></label>
+              <label class="check"><input type="checkbox" name="alertas" value="Conflitos intensos por tela"><span>📱 Conflitos intensos por tela</span></label>
+              <label class="check"><input type="checkbox" name="alertas" value="Recusa persistente de dormir"><span>🌙 Recusa persistente de dormir</span></label>
+              <label class="check"><input type="checkbox" name="alertas" value="Exaustão importante dos pais"><span>😔 Exaustão importante dos pais</span></label>
+              <label class="check"><input type="checkbox" name="alertas" value="Discussões frequentes entre os adultos por causa da rotina"><span>🗣️ Discussões entre adultos pela rotina</span></label>
+              <label class="check"><input type="checkbox" name="alertas" value="Sensação de perda de controle familiar"><span>🌀 Sensação de perda de controle</span></label>
+              <label class="check"><input type="checkbox" name="alertas" value="Nenhum desses"><span>✓ Nenhum desses</span></label>
+            </div>
+            <label class="check consent">
+              <input type="checkbox" name="consentimento_envio" value="Sim">
+              <span>Autorizo o envio destas respostas para acompanhamento profissional.</span>
+            </label>
+            <div class="form-actions">
+              <button class="btn primary" type="submit">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4.5 4.5L14 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Enviar resultado
+              </button>
+              <button class="btn" type="reset">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2.5 8a5.5 5.5 0 1 0 1-3.2M2.5 2v3h3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Limpar
+              </button>
+            </div>
+            <div class="form-status" id="form-status" role="status" aria-live="polite">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" style="flex-shrink:0"><circle cx="9" cy="9" r="7" stroke="currentColor" stroke-width="1.5"/><path d="M6 9l2 2 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span id="form-status-text">Enviando para o Formspree...</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mobile-bar">
+          <button class="btn primary" type="submit">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 8l4.5 4.5L14 3.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Enviar resultado
+          </button>
+        </div>
+      </form>
+
+      <!-- RESULT PANEL -->
+      <aside class="result-panel" aria-live="polite" aria-label="Resultado automático">
+        <div class="result-header">
+          <div class="result-label">Resultado automático</div>
+          <div class="result-score-row">
+            <strong id="score">5</strong>
+            <span>/ 25</span>
+          </div>
+        </div>
+        <div class="result-body">
+          <div class="level-tag nivel-1" id="level">Nível 1 — necessidade de manutenção ativa</div>
+          <div class="result-block">
+            <span class="result-block-label">Interpretação</span>
+            <div class="result-block-value" id="interpretation">A casa não aparece como principal ponto de pressão, mas a rotina precisa ser mantida com estrutura para evitar aumento de desgaste.</div>
+          </div>
+          <div class="result-block">
+            <span class="result-block-label">Conduta recomendada</span>
+            <div class="result-block-value" id="conduct">Manter rotina previsível e observar pontos de atrito.</div>
+          </div>
+          <div class="result-block">
+            <span class="result-block-label">Reavaliação</span>
+            <div class="result-block-value" id="review">30 dias</div>
+          </div>
+          <div class="result-block">
+            <span class="result-block-label">Primeiro movimento</span>
+            <div class="result-block-value">Escolher uma rotina crítica, definir três passos visíveis e reduzir comandos longos.</div>
+          </div>
+          <div class="result-block">
+            <span class="result-block-label">Alertas selecionados</span>
+            <ul class="pill-list" id="selected-alerts">
+              <li class="empty">Nenhum alerta selecionado</li>
+            </ul>
+          </div>
+        </div>
+        <div class="result-actions">
+          <button class="btn primary" type="submit" form="casa-form">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1.5 7l3.5 3.5L12.5 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Enviar
+          </button>
+          <button class="btn" type="button" id="print">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="3" y="1" width="8" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M3 9H1.5A.5.5 0 0 1 1 8.5v-3A.5.5 0 0 1 1.5 5h11a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5H11" stroke="currentColor" stroke-width="1.3"/><rect x="3" y="8" width="8" height="5" rx="1" stroke="currentColor" stroke-width="1.3"/></svg>
+            Imprimir
+          </button>
+          <button class="btn" type="reset" form="casa-form">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7a5 5 0 1 0 1-3M2 1.5v3h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Limpar
+          </button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const classifications = [
+      { min:5,  max:9,  className:"nivel-1", level:"Nível 1 — necessidade de manutenção ativa",        heroLevel:"Nível 1 — manutenção",        interpretation:"A casa não aparece como principal ponto de pressão, mas a rotina precisa ser mantida com estrutura para evitar aumento de desgaste.", conduct:"Manter rotina previsível e observar pontos de atrito.", review:"30 dias" },
+      { min:10, max:14, className:"nivel-2", level:"Nível 2 — necessidade de suporte preventivo-focal", heroLevel:"Nível 2 — suporte preventivo",   interpretation:"Há sinais de desgaste e repetição de comandos.", conduct:"Organizar estratégia objetiva para reduzir atrito familiar.", review:"14 a 30 dias" },
+      { min:15, max:19, className:"nivel-3", level:"Nível 3 — necessidade de suporte prioritário",      heroLevel:"Nível 3 — suporte prioritário", interpretation:"A rotina familiar já gera prejuízo claro.", conduct:"Acionar o bloco Rotina em 3 Passos.", review:"14 dias" },
+      { min:20, max:25, className:"nivel-4", level:"Nível 4 — necessidade de suporte intensivo",        heroLevel:"Nível 4 — suporte intensivo",   interpretation:"O funcionamento da casa está sob alta pressão.", conduct:"Reduzir conflito, simplificar rotina e reavaliar em curto prazo.", review:"7 a 14 dias" }
+    ];
+
+    const form             = document.querySelector("#casa-form");
+    const scoreEl          = document.querySelector("#score");
+    const heroScoreEl      = document.querySelector("#heroScore");
+    const heroLevelEl      = document.querySelector("#heroLevel");
+    const levelEl          = document.querySelector("#level");
+    const interpretationEl = document.querySelector("#interpretation");
+    const conductEl        = document.querySelector("#conduct");
+    const reviewEl         = document.querySelector("#review");
+    const alertsEl         = document.querySelector("#selected-alerts");
+    const hiddenScore      = document.querySelector("#resultado_pontuacao");
+    const hiddenLevel      = document.querySelector("#resultado_nivel");
+    const hiddenInterp     = document.querySelector("#resultado_interpretacao");
+    const hiddenConduct    = document.querySelector("#resultado_conduta");
+    const hiddenReview     = document.querySelector("#resultado_reavaliacao");
+    const hiddenAlerts     = document.querySelector("#alertas_resumo");
+    const formStatusEl     = document.querySelector("#form-status");
+    const formStatusText   = document.querySelector("#form-status-text");
+    const ringFill         = document.querySelector("#ringFill");
+
+    const levelColors = {
+      'nivel-1': { bg:'rgba(8,127,140,.2)',   color:'#5feaf7', border:'rgba(8,127,140,.4)' },
+      'nivel-2': { bg:'rgba(23,133,91,.2)',   color:'#5feabd', border:'rgba(23,133,91,.4)' },
+      'nivel-3': { bg:'rgba(249,160,63,.15)', color:'#f9c56f', border:'rgba(249,160,63,.4)' },
+      'nivel-4': { bg:'rgba(244,98,42,.15)',  color:'#f9926a', border:'rgba(244,98,42,.4)' },
+    };
+
+    function currentScore() {
+      return ["casa_01","casa_02","casa_03","casa_04","casa_05"].reduce((sum, name) => {
+        const checked = form.querySelector(`input[name="${name}"]:checked`);
+        return sum + Number(checked?.value || 1);
+      }, 0);
+    }
+
+    function currentClassification(score) {
+      return classifications.find(c => score >= c.min && score <= c.max) || classifications[0];
+    }
+
+    function currentSelectedAlerts() {
+      const noneOpt = form.querySelector('input[value="Nenhum desses"]');
+      if (noneOpt?.checked) {
+        form.querySelectorAll('input[name="alertas"]').forEach(i => { if (i !== noneOpt) i.checked = false; });
+        return [];
+      }
+      return [...form.querySelectorAll('input[name="alertas"]:checked')]
+        .map(i => i.value).filter(v => v !== "Nenhum desses");
+    }
+
+    function renderAlerts(alerts) {
+      alertsEl.innerHTML = "";
+      if (!alerts.length) {
+        const li = document.createElement("li"); li.className="empty"; li.textContent="Nenhum alerta selecionado"; alertsEl.append(li); return;
+      }
+      alerts.forEach(a => { const li = document.createElement("li"); li.textContent=a; alertsEl.append(li); });
+    }
+
+    function updateResult() {
+      const score  = currentScore();
+      const result = currentClassification(score);
+      const alerts = currentSelectedAlerts();
+
+      scoreEl.textContent          = score;
+      heroScoreEl.textContent      = score;
+      levelEl.textContent          = result.level;
+      levelEl.className            = `level-tag ${result.className}`;
+      interpretationEl.textContent = result.interpretation;
+      conductEl.textContent        = result.conduct;
+      reviewEl.textContent         = result.review;
+      hiddenScore.value  = `${score}/25`;
+      hiddenLevel.value  = result.level;
+      hiddenInterp.value = result.interpretation;
+      hiddenConduct.value= result.conduct;
+      hiddenReview.value = result.review;
+      hiddenAlerts.value = alerts.join(", ") || "Nenhum alerta selecionado";
+
+      // Ring
+      const pct = Math.max(0, Math.min(1, (score - 5) / 20));
+      ringFill.style.strokeDashoffset = 340 - (340 * pct);
+
+      // Hero pill
+      heroLevelEl.textContent = result.heroLevel;
+      const c = levelColors[result.className];
+      if (c) { heroLevelEl.style.background=c.bg; heroLevelEl.style.color=c.color; heroLevelEl.style.borderColor=c.border; }
+
+      renderAlerts(alerts);
+    }
+
+    form.addEventListener("change", e => {
+      formStatusEl.className = "form-status";
+      if (e.target.name === "alertas" && e.target.value !== "Nenhum desses") {
+        const none = form.querySelector('input[value="Nenhum desses"]');
+        if (none) none.checked = false;
+      }
+      updateResult();
+    });
+
+    form.addEventListener("click", e => {
+      const label = e.target.closest("[data-rating-input]");
+      if (!label) return;
+      const input = document.getElementById(label.dataset.ratingInput);
+      if (!input) return;
+      input.checked = true;
+      input.dispatchEvent(new Event("change", { bubbles: true }));
+    });
+
+    form.addEventListener("submit", () => {
+      updateResult();
+      formStatusText.textContent = "Enviando para o Formspree...";
+      formStatusEl.className = "form-status show";
+    });
+
+    form.addEventListener("reset", () => { window.setTimeout(updateResult, 0); });
+    document.querySelector("#print").addEventListener("click", () => window.print());
+    updateResult();
+  </script>
+</body>
+</html>
