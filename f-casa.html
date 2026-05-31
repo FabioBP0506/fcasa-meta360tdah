@@ -620,6 +620,25 @@
 
     form.addEventListener("submit", () => {
       updateResult();
+                // Enviar dados para Make → Netlify Function → Google Sheets
+                const dados = {
+                id_formulario: document.getElementById('id_formulario')?.value || 'F_CASA',
+                              nome_crianca: form.querySelector('[name="nome_crianca"]')?.value || '',
+                              responsavel: form.querySelector('[name="responsavel"]')?.value || '',
+                              periodo: form.querySelector('[name="periodo"]')?.value || '',
+                              resultado_pontuacao: document.getElementById('resultado_pontuacao')?.value || '',
+                              resultado_nivel: document.getElementById('resultado_nivel')?.value || '',
+                resultado_interpretacao: document.getElementById('resultado_interpretacao')?.value || '',
+                              resultado_conduta: document.getElementById('resultado_conduta')?.value || '',
+                              resultado_reavaliacao: document.getElementById('resultado_reavaliacao')?.value || '',
+                              alertas_resumo: document.getElementById('alertas_resumo')?.value || ''
+                };
+                fetch('https://hook.us2.make.com/3b05wkwmvac3m3jf19vrjter30eggd5n', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify(dados)
+                }).catch(() => {});
+      
       formStatusText.textContent = "Enviando para o Formspree...";
       formStatusEl.className = "form-status show";
     });
